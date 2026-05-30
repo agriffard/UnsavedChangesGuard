@@ -1,0 +1,74 @@
+@page "/edit-form"
+
+<PageTitle>Edit Form Demo</PageTitle>
+
+<UnsavedChangesGuard When="@isDirty" Message="@guardMessage" />
+
+<h1>Edit Form Demo</h1>
+
+<p>Change the values below, then navigate away to see the unsaved changes guard in action.</p>
+
+<div class="mb-3">
+    <label class="form-label" for="name">Name</label>
+    <input id="name" class="form-control" value="@name" @oninput="OnNameChanged" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label" for="email">Email</label>
+    <input id="email" class="form-control" value="@email" @oninput="OnEmailChanged" />
+</div>
+
+<div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" id="forceDirty" checked="@forceDirty" @onchange="OnForceDirtyChanged" />
+    <label class="form-check-label" for="forceDirty">Mark as dirty</label>
+</div>
+
+<p><strong>Dirty state:</strong> @(isDirty ? "Dirty" : "Clean")</p>
+
+<div class="d-flex gap-2">
+    <button class="btn btn-primary" @onclick="Save">Save</button>
+    <button class="btn btn-secondary" @onclick="Reset">Reset</button>
+</div>
+
+@code {
+    private string name = "Ada Lovelace";
+    private string email = "ada@example.com";
+
+    private string initialName = "Ada Lovelace";
+    private string initialEmail = "ada@example.com";
+
+    private bool forceDirty;
+
+    private bool isDirty => forceDirty || name != initialName || email != initialEmail;
+
+    private const string guardMessage = "You have unsaved changes in this form. Leave this page anyway?";
+
+    private void OnNameChanged(ChangeEventArgs args)
+    {
+        name = args.Value?.ToString() ?? string.Empty;
+    }
+
+    private void OnEmailChanged(ChangeEventArgs args)
+    {
+        email = args.Value?.ToString() ?? string.Empty;
+    }
+
+    private void OnForceDirtyChanged(ChangeEventArgs args)
+    {
+        forceDirty = args.Value is bool value && value;
+    }
+
+    private void Save()
+    {
+        initialName = name;
+        initialEmail = email;
+        forceDirty = false;
+    }
+
+    private void Reset()
+    {
+        name = initialName;
+        email = initialEmail;
+        forceDirty = false;
+    }
+}
